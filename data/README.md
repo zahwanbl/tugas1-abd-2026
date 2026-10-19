@@ -4,18 +4,20 @@
 
 Isi informasi berikut sebelum Milestone 1.
 
-| Item | Isi |
-|---|---|
-| Nama dataset | `[isi nama dataset]` |
-| Sumber | `[URL BPS / Satu Data Indonesia / BMKG / HuggingFace / Kaggle]` |
-| Lisensi/ketentuan pakai | `[isi]` |
-| Ukuran | `[3.278.688 baris (> 1 juta), 8 kolom; 17 MB dalam format Parquet terkompresi]` |
-| Periode data | `[isi]` |
-| Unit analisis | `[isi]` |
+| Item                    | Isi                                                                          |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| Nama dataset            | Data cuaca historis per jam 34 ibu kota provinsi Indonesia                   |
+| Sumber                  | Open-Meteo Historical Weather API (reanalisis ERA5): https://open-meteo.com/ |
+| Lisensi/ketentuan pakai | CC BY 4.0, atribusi ke Open-Meteo; gratis untuk penggunaan non-komersial     |
+| Ukuran                  | 3.278.688 baris (> 1 juta), 8 kolom; 17 MB dalam format Parquet terkompresi  |
+| Periode data            | 1 Januari 2015 - 31 Desember 2025 (zona waktu Asia/Jakarta)                  |
+| Unit analisis           | Satu baris = satu ibu kota provinsi pada satu jam                            |
 
-## Tempat Mencari Dataset
+Kolom: time, temperature_2m, relative_humidity_2m, precipitation, wind_speed_10m, kota, lat, lon.
 
-Pilih dataset Indonesia yang legal digunakan, dapat didokumentasikan sumbernya, dan memenuhi batas ukuran tugas.
+Catatan: data berasal dari reanalisis ERA5 (model grid), bukan observasi stasiun BMKG. Koordinat adalah titik pusat kota.
+
+Cara memperoleh data: jalankan `python src/download_cuaca.py` dari root repo. Skrip mengunduh per kota ke `data/raw/kota/`, lalu menggabungkannya menjadi `data/raw/cuaca_indonesia_2015_2025.parquet`.
 
 | Situs | Kegunaan |
 |---|---|
