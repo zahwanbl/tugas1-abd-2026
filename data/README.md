@@ -9,7 +9,7 @@ Isi informasi berikut sebelum Milestone 1.
 | Nama dataset | `[isi nama dataset]` |
 | Sumber | `[URL BPS / Satu Data Indonesia / BMKG / HuggingFace / Kaggle]` |
 | Lisensi/ketentuan pakai | `[isi]` |
-| Ukuran | `[>= 500 MB atau > 1.000.000 baris]` |
+| Ukuran | `[3.278.688 baris (> 1 juta), 8 kolom; 17 MB dalam format Parquet terkompresi]` |
 | Periode data | `[isi]` |
 | Unit analisis | `[isi]` |
 
