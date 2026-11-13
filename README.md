@@ -138,11 +138,10 @@ Target tertinggi adalah analisis yang efisien, terdokumentasi, dapat direproduks
 3. Commit dengan pesan yang jelas, lalu push ke branch utama:
    ```bash
    git add <file yang diubah>
-   git commit -m "pesan commit"
+   git commit -m "Menyelesaikan Tugas 1 Analisis Big Data"
    git push origin main
    ```
 4. Buka repository GitHub dan pastikan file sudah muncul serta ada commit hasil pekerjaan.
-5. Salin URL repository untuk penilaian jika diminta dosen.
 
 ---
 
