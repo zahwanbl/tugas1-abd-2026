@@ -158,5 +158,29 @@ Target tertinggi adalah analisis yang efisien, terdokumentasi, dapat direproduks
 ## AI Disclosure Statement
 
 - **Alat AI yang digunakan:** Claude (Anthropic).
-- **Bagian yang dibantu:** pemecahan masalah setup (WSL2, Docker, Git/GitHub), penyusunan draf skrip unduh data dan draf kode notebook 01-03, penjelasan konsep (windsorization, window function, korelasi), serta penyusunan draf catatan milestone dan insight.
-- **Verifikasi yang dilakukan:** menjalankan semua cell dari awal pada data asli, mencocokkan angka di catatan dan insight dengan output notebook, memeriksa grafik secara langsung, dan mempelajari setiap bagian kode agar dapat dijelaskan sendiri.
+
+- **Bagian yang dibantu AI:**
+
+  - Memberikan panduan dalam proses setup lingkungan kerja (WSL2, Docker, Git/GitHub) serta membantu menyelesaikan kendala yang muncul selama proses konfigurasi.
+  - Membantu mengidentifikasi dan memperbaiki bug atau error pada kode.
+  - Memberikan draf awal kode untuk skrip pengunduhan data dan notebook 01–03 (Polars, DuckDB, Plotly), yang kemudian saya lengkapi dan sesuaikan sendiri dengan kebutuhan analisis.
+  - Membantu menjelaskan konsep teknis dan statistik, seperti winsorization, window function, dan korelasi, agar saya dapat memahami penerapannya dalam analisis.
+  - Membantu memperbaiki struktur kalimat dan melakukan parafrase terhadap insight yang telah saya susun sendiri agar lebih jelas dan mudah dipahami.
+  - Membantu melakukan review akhir terhadap kode dan insight yang telah saya kerjakan, serta memberikan masukan mengenai kesesuaian hasil dan bagian yang perlu diperbaiki.
+
+- **Bagian yang saya kerjakan sendiri:**
+
+  - Menentukan topik analisis dan memilih dataset yang digunakan.
+  - Melakukan setup lingkungan kerja dengan mengikuti panduan serta menyelesaikan kendala yang ditemukan.
+  - Melengkapi, menyesuaikan, dan menjalankan kode pada seluruh tahapan pipeline, mulai dari pengunduhan data hingga notebook 01–03.
+  - Memeriksa dan memvalidasi hasil pengolahan data, tabel, serta visualisasi yang dihasilkan.
+  - Menganalisis hasil pengolahan data dan menyusun insight secara mandiri berdasarkan temuan dari dataset.
+  - Mengevaluasi masukan dari AI dan melakukan penyesuaian atau perbaikan apabila diperlukan.
+  - Melakukan commit dan push ke repository GitHub pada setiap milestone.
+
+- **Verifikasi yang dilakukan:**
+
+  - Menjalankan ulang seluruh cell notebook dari awal untuk memastikan kode berjalan dengan baik.
+  - Memeriksa kesesuaian hasil analisis, angka, tabel, dan grafik dengan insight yang disusun.
+  - Melakukan pengecekan akhir dengan bantuan AI sebagai *second opinion* untuk mengevaluasi kode dan insight, kemudian memvalidasi kembali hasilnya secara mandiri.
+  - Meninjau dan mempelajari kode yang digunakan agar memahami alur serta proses analisisnya.
