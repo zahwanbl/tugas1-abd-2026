@@ -1,56 +1,115 @@
 # Tugas 1: Eksplorasi dan Analisis Dataset Besar Indonesia
 
-Template untuk Tugas 1 mata kuliah Analisis Big Data. Setelah repository GitHub Classroom dibuat, ubah nama repository menjadi `tugas1-[username_github]`.
+Repository ini adalah pengerjaan Tugas 1 mata kuliah Analisis Big Data (UMM), dikerjakan dari template `UMM-GURU/tugas1-abd-2026`.
 
-## Milestone
+**Mahasiswa:** Siti Zahwa Nabila Putri | **NIM:** 202310370311417 | **GitHub:** [zahwanbl](https://github.com/zahwanbl)
+
+---
+
+## Ringkasan Proyek: Analisis Cuaca Per Jam 34 Ibu Kota Provinsi Indonesia (2015-2025)
+
+**Dataset:** data cuaca per jam dari Open-Meteo Historical Weather API (reanalisis ERA5) untuk 34 ibu kota provinsi, periode 1 Januari 2015 sampai 31 Desember 2025. Total **3.278.688 baris** (memenuhi syarat lebih dari 1 juta baris) dan 8 kolom: `time`, `temperature_2m`, `relative_humidity_2m`, `precipitation`, `wind_speed_10m`, `kota`, `lat`, `lon`. Detail sumber dan cara unduh ada di [`data/README.md`](data/README.md).
+
+### Alur pengerjaan
+
+| Tahap | Notebook | Isi |
+|---|---|---|
+| Milestone 1 | `notebooks/01_data_profiling.ipynb` | Profiling dataset dengan Polars dan DuckDB `SUMMARIZE` |
+| Milestone 2 | `notebooks/02_data_cleaning.ipynb` | Konversi tipe waktu, deteksi dan penanganan outlier (IQR + windsorization), cek duplikat dan kelengkapan, validasi data, simpan ke `data/processed/` |
+| Milestone 3 | `notebooks/03_eda_and_insights.ipynb` | Analisis temporal (`group_by_dynamic`, `rolling_mean`, `shift`, DuckDB window function), 6 visualisasi interaktif Plotly, 5 insight |
+
+### Ringkasan hasil pembersihan data (Milestone 2)
+
+- Tidak ada missing values dan tidak ada duplikat berdasarkan kunci (`kota`, `time`); 34 kota x 96.432 jam lengkap.
+- Outlier suhu dan kecepatan angin ditangani dengan IQR + windsorization pada kolom baru `*_winsor` (nilai asli dipertahankan). Curah hujan hanya ditandai (`hujan_ekstrem`, > 20 mm/jam) karena distribusinya sangat miring.
+- Semua aturan validasi domain lolos. Jumlah baris sebelum dan sesudah cleaning sama (3.278.688).
+
+### Ringkasan insight utama (Milestone 3)
+
+1. **Tren dan musiman:** suhu rata-rata naik tipis dari 26,375 °C (2015) ke 26,624 °C (2025), tetapi fluktuasi antar tahun lebih besar daripada kenaikan tersebut. Curah hujan rata-rata tertinggi pada Januari (310,2 mm/bulan).
+2. **Distribusi dan anomali:** curah hujan harian sangat condong ke nilai kecil. Hujan >= 50 mm hanya 0,62% kota-hari, dan 5 kota menyumbang sekitar 46% dari 487 jam hujan ekstrem.
+3. **Korelasi:** suhu dan kelembapan berkorelasi negatif kuat (r = -0,80), sedangkan curah hujan hampir tidak berkorelasi linear dengan variabel lain.
+4. **Perbedaan antar kota:** Bandung paling sejuk (23,06 °C), Surabaya paling panas (27,72 °C), Jayapura paling basah (4.989 mm/tahun), Kupang paling kering (1.391 mm/tahun).
+5. **Rekomendasi:** peringatan dini hujan ekstrem diprioritaskan pada kota rawan, perencanaan musiman disesuaikan per wilayah, dan temuan divalidasi dengan data stasiun BMKG karena ERA5 adalah estimasi model, bukan pengamatan stasiun.
+
+Grafik interaktif tersimpan di `output/figures/` (file HTML).
+
+---
+
+## Cara Menjalankan Ulang dari Awal
+
+Pastikan Docker sudah terpasang, lalu jalankan dari folder repository:
+
+```bash
+docker build -t tugas1-bigdata .
+docker run --rm -p 8888:8888 -v "$(pwd)":/home/jovyan/work tugas1-bigdata
+```
+
+Buka JupyterLab di `http://localhost:8888/lab`.
+
+> Konfigurasi Docker ini menjalankan JupyterLab tanpa password atau token, sehingga hanya untuk penggunaan lokal. Jangan dipakai di server atau jaringan publik.
+
+Langkah berikutnya di dalam JupyterLab:
+
+1. **Unduh data.** Buka Terminal di JupyterLab, lalu jalankan `python src/download_cuaca.py`. Skrip mengunduh data tiap kota dari Open-Meteo dan menggabungkannya menjadi `data/raw/cuaca_indonesia_2015_2025.parquet`. Proses bisa memakan waktu karena ada batas laju (rate limit) API. Jika terhenti, jalankan lagi; kota yang sudah terunduh dilewati.
+2. **Jalankan notebook berurutan:** `01_data_profiling.ipynb`, lalu `02_data_cleaning.ipynb`, lalu `03_eda_and_insights.ipynb` (menu Run, Run All Cells).
+3. Hasil pembersihan tersimpan di `data/processed/cuaca_bersih.parquet`, dan grafik di `output/figures/`.
+
+Data tidak ikut di-commit karena berukuran besar (`data/raw/` masuk `.gitignore`).
+
+---
+
+## Tentang Tugas
+
+Setelah repository dibuat, nama repository sebaiknya diubah menjadi `tugas1-[username_github]`.
+
+### Milestone
 
 | Tahap | Target | Bukti yang dikumpulkan |
 |---|---|---|
-| Milestone 1 | Pertemuan 3 | Dataset >= 500 MB atau > 1 juta baris, `data/README.md`, dan `notebooks/01_data_profiling.ipynb` |
+| Milestone 1 | Pertemuan 3 | Dataset >= 500 MB atau > 1 juta baris, `data/README.md`, `notebooks/01_data_profiling.ipynb` |
 | Milestone 2 | Pertemuan 5 | Cleaning dengan Polars dan profiling DuckDB `SUMMARIZE` |
 | Milestone 3 | Pertemuan 8 | Analisis temporal/ruang dan minimal 6 visualisasi interaktif |
 | Final | Pertemuan 10 | Minimal 5 insight, Dockerfile, dan dokumentasi akhir |
 
-## Output yang Diharapkan
+### Output yang Diharapkan
 
-Pada final submission, repository harus menghasilkan analisis yang dapat dijalankan ulang dari awal dan memuat:
+Repository final harus dapat dijalankan ulang dari awal dan memuat:
 
-- Dataset Indonesia yang terdokumentasi, berukuran minimal 500 MB atau lebih dari 1 juta baris, beserta instruksi unduhnya.
-- Notebook profiling, cleaning, serta EDA yang dapat dieksekusi berurutan.
-- Cleaning dan validasi data untuk missing values, duplikasi, outlier, serta aturan kualitas yang relevan dengan dataset.
-- Analisis temporal atau spasial, minimal 6 visualisasi interaktif dengan Plotly atau Altair, dan minimal 5 insight analitik yang didukung hasil analisis.
-- Environment yang dapat direproduksi melalui `Dockerfile`, `requirements.txt`, dan petunjuk eksekusi di README.
-- Riwayat commit bertahap yang menunjukkan proses kerja pada setiap milestone.
+- Dataset Indonesia yang terdokumentasi (minimal 500 MB atau 1 juta baris) beserta instruksi unduh.
+- Notebook profiling, cleaning, dan EDA yang dapat dieksekusi berurutan.
+- Cleaning dan validasi data: missing values, duplikasi, outlier, dan aturan kualitas.
+- Analisis temporal atau spasial, minimal 6 visualisasi interaktif (Plotly atau Altair), dan minimal 5 insight.
+- Environment yang dapat direproduksi: `Dockerfile`, `requirements.txt`, dan petunjuk eksekusi.
+- Riwayat commit bertahap untuk setiap milestone.
 
-## Kaitan dengan Materi Perkuliahan
+### Kaitan dengan Materi Perkuliahan
 
-| Materi | Pertemuan | Penerapan pada Tugas 1 |
-|---|:---:|---|
-| Polars dan lazy evaluation | 2 | Profiling dan transformasi dataset besar dengan `scan_*`, expressions, dan pipeline efisien. |
-| DuckDB dan format data | 3 | Query analitik serta profiling dengan `SUMMARIZE`; gunakan Parquet bila sesuai. |
-| Data quality dan cleaning | 4 | Tangani missing values, duplikasi, outlier, dan validasi data. |
-| EDA dan visualisasi | 5 | Bangun visualisasi interaktif serta rumuskan insight analitik. |
-| Time series | 6 | Terapkan analisis pola waktu atau pola spasial yang relevan dengan dataset. |
-| Dask, NLP, dan ML | 7-9 | Opsional sebagai pengembangan jika relevan dengan skala dan pertanyaan analisis. |
-| Streamlit dan Docker | 10-11 | Dokumentasikan environment Docker; dashboard Streamlit bersifat opsional untuk Tugas 1. |
+| Materi | Pertemuan | Penerapan |
+|---|---|---|
+| Polars dan lazy evaluation | 2 | Profiling dan transformasi dengan `scan_*`, expressions, pipeline |
+| DuckDB dan format data | 3 | Query analitik, `SUMMARIZE`, Parquet bila sesuai |
+| Data quality dan cleaning | 4 | Missing values, duplikasi, outlier, validasi |
+| EDA dan visualisasi | 5 | Visualisasi interaktif dan insight |
+| Time series | 6 | Pola waktu atau spasial |
+| Dask, NLP, dan ML | 7-9 | Opsional |
+| Streamlit dan Docker | 10-11 | Dokumentasi Docker; dashboard Streamlit opsional |
 
-## Ringkasan Penilaian
+### Ringkasan Penilaian (25% nilai akhir)
 
-Nilai Tugas 1 berbobot 25% dari nilai akhir. Penilaian lengkap ada di dokumen spesifikasi tugas; ringkasannya sebagai berikut.
+| Aspek | Bobot |
+|---|---|
+| Konsistensi commit dan GitHub workflow | 20% |
+| Data handling dengan Polars dan DuckDB | 25% |
+| Cleaning dan data quality | 15% |
+| Visualisasi dan insight | 25% |
+| Reproduktivitas dan Docker | 15% |
 
-| Aspek | Bobot | Indikator utama |
-|---|:---:|---|
-| Konsistensi commit dan GitHub workflow | 20% | Commit bertahap, pesan deskriptif, struktur repository rapi, dan pemeriksaan otomatis lulus. |
-| Data handling dengan Polars dan DuckDB | 25% | Pengolahan data besar efisien, memakai Polars dan DuckDB sesuai peran masing-masing. |
-| Cleaning dan data quality | 15% | Profiling, validasi, serta penanganan null dan outlier terdokumentasi. |
-| Visualisasi dan insight | 25% | Visualisasi interaktif informatif dan insight analitik yang didukung data. |
-| Reproduktivitas dan Docker | 15% | Dockerfile, dependency, dan instruksi eksekusi memungkinkan proyek dijalankan ulang. |
+Target tertinggi adalah analisis yang efisien, terdokumentasi, dapat direproduksi, dan menunjukkan proses kerja yang konsisten.
 
-Target kualitas tertinggi adalah analisis yang efisien, terdokumentasi, dapat direproduksi, dan memperlihatkan proses kerja konsisten sepanjang milestone; bukan hanya hasil akhir yang terlihat baik.
+### Struktur Repository
 
-## Struktur Repository
-
-```text
+```
 .
 ├── .github/workflows/lint_check.yml
 ├── data/README.md
@@ -65,172 +124,39 @@ Target kualitas tertinggi adalah analisis yang efisien, terdokumentasi, dapat di
 └── README.md
 ```
 
-# Tugas 1 Analisis Big Data 2026
-
-## Persiapan GitHub
-
-### 1. Fork Repository Tugas
-
-Fork repository berikut ke akun GitHub masing-masing:
-
-https://github.com/UMM-GURU/tugas1-abd-2026.git
-
-Langkah-langkah:
-
-1. Login ke GitHub.
-2. Buka repository tugas.
-3. Klik tombol **Fork** di pojok kanan atas.
-4. Tunggu hingga GitHub membuat salinan repository ke akun Anda.
-
-Setelah selesai, Anda akan memiliki repository dengan alamat seperti:
-
-```text
-https://github.com/USERNAME-ANDA/tugas1-abd-2026.git
-```
-
----
-
-### 2. Clone Repository Hasil Fork
-
-Buka Terminal, Git Bash, atau Command Prompt lalu jalankan:
-
-```bash
-git clone https://github.com/USERNAME-ANDA/tugas1-abd-2026.git
-cd tugas1-abd-2026
-```
-
-Ganti `USERNAME-ANDA` dengan username GitHub Anda.
-
----
-
-## Menjalankan Project
-
-Pastikan Docker sudah terpasang pada komputer Anda.
-
-### Build Docker Image
-
-```bash
-docker build -t tugas1-bigdata .
-```
-
-### Jalankan Container
-
-```bash
-docker run --rm -p 8888:8888 -v "$(pwd)":/home/jovyan/work tugas1-bigdata
-```
-
-### Membuka JupyterLab
-
-Buka browser dan akses:
-
-http://localhost:8888/lab
-
-> **Catatan:** Konfigurasi Dockerfile menjalankan JupyterLab tanpa password atau token untuk penggunaan lokal. Jangan gunakan konfigurasi ini pada server atau jaringan publik.
-
----
-
-## Menyiapkan Dataset
-
-1. Letakkan dataset yang akan digunakan pada folder:
-
-```text
-data/raw/
-```
-
-2. Buka notebook profiling atau notebook yang digunakan.
-3. Sesuaikan nilai variabel `DATA_PATH` agar mengarah ke file dataset yang Anda gunakan.
-
-Contoh:
-
-```python
-DATA_PATH = "data/raw/nama_dataset.csv"
-```
-
----
-
-## Mengerjakan Tugas
-
-1. Baca seluruh instruksi yang terdapat pada notebook.
-2. Kerjakan setiap bagian sesuai perintah.
-3. Simpan perubahan secara berkala.
-
----
-
-## Commit Perubahan
-
-Setelah tugas selesai dikerjakan, simpan hasil pekerjaan ke Git menggunakan perintah berikut:
-
-```bash
-git add .
-git commit -m "Menyelesaikan Tugas 1 Analisis Big Data"
-```
-
-Anda dapat mengganti pesan commit sesuai kebutuhan.
-
----
-
-## Push ke Repository GitHub
-
-Kirim hasil pekerjaan ke repository GitHub milik Anda:
-
-```bash
-git push origin main
-```
-
-Apabila branch utama bernama `master`, gunakan:
-
-```bash
-git push origin master
-```
-
----
-
-## Verifikasi Pengumpulan
-
-1. Buka repository GitHub milik Anda.
-2. Pastikan file yang telah dikerjakan sudah muncul.
-3. Pastikan terdapat minimal satu commit hasil pekerjaan Anda.
-4. Salin URL repository Anda untuk keperluan penilaian jika diminta dosen.
-
-Contoh URL repository:
-
-```text
-https://github.com/USERNAME-ANDA/tugas1-abd-2026
-```
-
----
-
-## Menjalankan Project
-
-```bash
-docker build -t tugas1-bigdata .
-docker run --rm -p 8888:8888 -v "$(pwd)":/home/jovyan/work tugas1-bigdata
-```
-
-Buka JupyterLab pada `http://localhost:8888/lab`. Konfigurasi Dockerfile menjalankan JupyterLab tanpa password atau token untuk penggunaan lokal. Jangan gunakan konfigurasi ini pada server atau jaringan publik. Letakkan dataset pada `data/raw/`, lalu sesuaikan `DATA_PATH` di notebook profiling.
-
-## Aturan Teknis
+### Aturan Teknis
 
 - Gunakan Polars untuk manipulasi data dan DuckDB untuk analitik SQL.
-- Dataset harus minimal 500 MB atau lebih dari 1 juta baris.
-- Jangan commit file data besar; simpan instruksi unduhan dan sumber data pada `data/README.md`.
-- Gunakan commit bertahap dan pesan yang jelas, misalnya `feat: add initial dataset profiling`.
+- Dataset minimal 500 MB atau lebih dari 1 juta baris.
+- Jangan commit file data besar; simpan instruksi unduh dan sumber data di `data/README.md`.
+- Gunakan commit bertahap dengan pesan jelas, misalnya `feat: add initial dataset profiling`.
+
+### Pengumpulan
+
+1. Fork repository tugas (`UMM-GURU/tugas1-abd-2026`) ke akun GitHub sendiri, lalu clone hasil fork.
+2. Kerjakan notebook secara berurutan dan simpan perubahan secara berkala.
+3. Commit dengan pesan yang jelas, lalu push ke branch utama:
+   ```bash
+   git add <file yang diubah>
+   git commit -m "pesan commit"
+   git push origin main
+   ```
+4. Buka repository GitHub dan pastikan file sudah muncul serta ada commit hasil pekerjaan.
+5. Salin URL repository untuk penilaian jika diminta dosen.
+
+---
 
 ## Integritas Akademik dan Penggunaan AI
 
-- Dilarang menyalin kode, laporan, atau visualisasi mahasiswa lain maupun repository publik tanpa sitasi dan atribusi yang jelas.
+- Dilarang menyalin kode, laporan, atau visualisasi tanpa sitasi dan atribusi.
 - Dilarang menggunakan jasa joki atau menyerahkan pekerjaan yang tidak dapat dijelaskan sendiri.
-- AI boleh digunakan untuk belajar, mencari rujukan, menjelaskan konsep, atau debugging. AI tidak menggantikan tanggung jawab mahasiswa atas kebenaran dan kualitas solusi.
-- Mahasiswa wajib dapat menjelaskan setiap bagian kode, menjalankan serta memverifikasi ulang hasilnya, dan memastikan penggunaan Polars serta DuckDB sesuai standar kuliah.
-- Setiap penggunaan AI harus dicantumkan pada bagian AI Disclosure Statement di bawah.
-- Pelanggaran pertama bernilai 0 untuk tugas terkait; pelanggaran berikutnya dapat berakibat nilai E untuk mata kuliah sesuai ketentuan akademik.
+- AI boleh digunakan untuk belajar, mencari rujukan, menjelaskan konsep, dan debugging, tetapi tanggung jawab atas kebenaran dan kualitas tetap pada mahasiswa.
+- Mahasiswa harus dapat menjelaskan setiap bagian kode serta memverifikasi hasilnya.
+- Setiap penggunaan AI wajib dicantumkan di AI Disclosure Statement.
+- Pelanggaran pertama bernilai 0 untuk tugas terkait; pelanggaran berikutnya dapat berakibat nilai E untuk mata kuliah.
 
 ## AI Disclosure Statement
 
-Isi bagian ini sebelum pengumpulan akhir.
-
-> Alat AI yang digunakan: [nama alat].
->
-> Bagian yang dibantu: [contoh: penjelasan error Polars atau review dokumentasi].
->
-> Verifikasi yang dilakukan: [contoh: menjalankan ulang kode, memeriksa dokumentasi resmi, dan memahami setiap cell].
+- **Alat AI yang digunakan:** Claude (Anthropic).
+- **Bagian yang dibantu:** pemecahan masalah setup (WSL2, Docker, Git/GitHub), penyusunan draf skrip unduh data dan draf kode notebook 01-03, penjelasan konsep (windsorization, window function, korelasi), serta penyusunan draf catatan milestone dan insight.
+- **Verifikasi yang dilakukan:** menjalankan semua cell dari awal pada data asli, mencocokkan angka di catatan dan insight dengan output notebook, memeriksa grafik secara langsung, dan mempelajari setiap bagian kode agar dapat dijelaskan sendiri.
